@@ -1,0 +1,2 @@
+{ok,[Arg]} = init:get_argument(home).
+io:format("Args:~s~n",Arg).
