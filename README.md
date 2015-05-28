@@ -288,7 +288,7 @@ M = <<X:3,Y:7,Z:6>>.
 
 
 ## 第八章 Erlang 顺序编程补遗
-apply(Mod,Func,[arg1,Arg2,...,ArgN]). 等价于 Mode:Func(arg1,Arg2,...,ArgN).
+apply(Mod,Func,[arg1,Arg2,...,ArgN]). 等价于 Mod:Func(arg1,Arg2,...,ArgN).
 
 算数表达式
 
@@ -334,7 +334,7 @@ square(X) ->
 
 宏定义
 -define(Constant,Replacement).
--defile(Func(Var1,Var2,...Var),Replacement).
+-define(Func(Var1,Var2,...Var),Replacement).
 
 
 ?MacroName
@@ -393,19 +393,25 @@ _变量
 walks.erl
 
 -spec
+
 -type
 
 预定义类型
+
 -type term().
+
 -type boolean().
+
 -type byte().
+
 -type char().
+
 ....
 
 dialyzer test1.erl
 
 
-## 第十章　编译和运行程序
+## 第10章　编译和运行程序
 
 设置载入代码的路径
 
@@ -417,3 +423,148 @@ code:add_pathz(Dir).
 .erlang 文件
 
 erl -pa Dir1 -pa Dir2 .... -pz DirK1 -pz DirK2
+
+
+# 并发和分布式程序 第三部分
+
+## 第11章 现实世界中的并发
+
+## 第12章 并发编程
+
+Pid = spawn(Mod,Func,Args).
+Pid = spawn(Func).
+Pid ! Message
+
+receive ... end
+
+receive
+    Pattern1 [when Guard1] ->
+        Expression1;
+    Pattern2 [when Guard2] ->
+        Expression2;
+    ...
+after T ->
+    Expression
+end
+
+area_server0.erl
+
+Pid = spawn(area_server0,loop,[]).
+Pid ! {rectangle,6,10}.
+Pid ! {square,12}.
+
+Pid = spawn(area_server1,loop,[]).
+area_server1.rpc(Pid,{rectangle,6,10}).
+area_server1.rpc(Pid,socks).
+
+stimer.erl 定时器
+
+注册进程
+
+register(area,Pid).
+
+area ! {rectangle,4,5}.
+
+clock.erl 模拟时钟
+
+
+查看 area_server_final.erl 尾递归的
+loop 函数必须在最后
+
+spawn(Func)  spawn(MFA)
+
+
+## 第13章 并发程序中的错误
+
+任其崩溃
+让其他进程修复错误
+
+进程
+普通进程和系统进程  process_flag(trap_exit,true)
+连接
+A B 相互连接，其中任何一个终止会发错误信号
+监视
+监视是单向的
+消息和错误信号
+错误信号的接受
+显示错误信号
+不可捕捉的错误信号
+
+P1  call link(P3)
+
+-spec spawn_link(Fnc) -> Pid
+-spec spawn_link(Mod,Fuc,Args) -> Pid
+
+
+-spec spawn_monitor(Fnc) -> Pid
+-spec spawn_monitor(Mod,Fuc,Args) -> Pid
+
+{'DOWN',Ref,process,Pid,Why}
+
+-spec link(Pid) -> true
+-spec unlink(Pid) -> true
+
+-spec erlang:monitor(process,Item) -> Ref  Item 可以是进程 Pid 或者注册名称
+
+-spec exit(Why) -> none()  向连接的所有进程发送 Why 的退出信号  监视他的进程发送 DOWN消息
+-spec exit(Pid,Why) ->true
+
+
+容错式编程
+lib_misc.erl
+
+F = fun() ->
+        receive
+            X -> list_to_atom(X)
+        end
+    end.
+Pid = spawn(F).
+
+lib_misc:on_exit(Pid,fun(Why) ->
+                        io:format("~p died with:~p~n",[Pid,Why])
+                     end).
+
+
+## 第14章 分布式编程
+
+socket_dist/kvs.erl
+
+kvs:start().
+kvs:store({location,joe},"Stockholm").
+kvs:store(weather,raining).
+kvs:lookup({location,joe}).
+kvs:lookup(weather).
+
+erl -sname hf
+kvs:start().
+kvs:lookup(weather).
+
+erl -sname hj
+rpc:call('haifeng@haifeng-mac',kvs,store,[weather,fine]).
+rpc:call('haifeng@haifeng-mac',kvs,lookup,[weather]).
+
+
+erl -name hf -setcookie abc
+erl -name hj -setcookie abc
+
+rpc:call(Node,Mod,Function,Args).
+
+-spec spawn(Node,Func)->Pid
+
+-spec spawn(Node,Mod,Func,Args)->Pid
+
+-spec spawn_link(Node,Func)->Pid
+
+-spec spawn_link(Node,Mod,Func,Args)->Pid
+
+远程分裂示例
+
+dist_demo.erl
+
+cookie 保护系统
+
+$HOME/.erlang.cookie
+
+
+
+
