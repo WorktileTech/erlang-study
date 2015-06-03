@@ -425,6 +425,10 @@ code:add_pathz(Dir).
 erl -pa Dir1 -pa Dir2 .... -pz DirK1 -pz DirK2
 
 
+
+
+
+
 # 并发和分布式程序 第三部分
 
 ## 第11章 现实世界中的并发
@@ -564,6 +568,19 @@ dist_demo.erl
 cookie 保护系统
 
 $HOME/.erlang.cookie
+
+
+
+
+
+server1:start(name_server,name_server).
+name_server:add(joe,"at home").
+name_server:find(joe).
+
+
+server2:start(name_server,name_server).
+name_server:add(joe,"at home").
+name_server:find(joe).
 
 
 

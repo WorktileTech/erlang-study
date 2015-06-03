@@ -11,7 +11,7 @@
 -import(lists, [reverse/1]).
 
 nano_get_url() ->
-    nano_get_url("www.google.com").
+    nano_get_url("www.baidu.com").
 
 nano_get_url(Host) ->
     {ok,Socket} = gen_tcp:connect(Host,80,[binary, {packet, 0}]), %% (1)
@@ -44,6 +44,7 @@ start_nano_server() ->
 					 {reuseaddr, true},
 					 {active, true}]),
     {ok, Socket} = gen_tcp:accept(Listen),  %% (7)
+	  io:format("start accept."),
     gen_tcp:close(Listen),  %% (8)
     loop(Socket).
 loop(Socket) ->

@@ -10,7 +10,22 @@
 -author("haifeng").
 
 %% API
--export([hello/0]).
+-export([hello/0, start/0]).
 
 hello() ->
-  io:format("hello:~s~n",["world"]).
+  io:format("hello:~s~n", ["world"]).
+
+start() ->
+  Pid = spawn(fun ()-> loop() end),
+  Pid ! {self(), "hello"},
+  receive
+    {_From, Msg} ->
+      Msg
+  end.
+
+
+loop() ->
+  receive
+    {From, Msg} ->
+      From ! {self(),Msg}
+  end.
