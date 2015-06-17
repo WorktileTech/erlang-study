@@ -429,12 +429,16 @@ erl -pa Dir1 -pa Dir2 .... -pz DirK1 -pz DirK2
 
 
 
+
+
+
 # 并发和分布式程序 第三部分
 
 ## 第11章 现实世界中的并发
 
 ## 第12章 并发编程
 
+```
 Pid = spawn(Mod,Func,Args).
 Pid = spawn(Func).
 Pid ! Message
@@ -450,16 +454,24 @@ receive
 after T ->
     Expression
 end
+```
 
 area_server0.erl
 
+```
 Pid = spawn(area_server0,loop,[]).
 Pid ! {rectangle,6,10}.
 Pid ! {square,12}.
+```
 
+客户端-服务器
+客户端总是通过像服务器发送一个请求来发起计算，服务端计算后生成回复，然后发送一个响应给客户端。
+
+```
 Pid = spawn(area_server1,loop,[]).
 area_server1.rpc(Pid,{rectangle,6,10}).
 area_server1.rpc(Pid,socks).
+```
 
 stimer.erl 定时器
 
