@@ -16,19 +16,19 @@ store(Key, Value) -> rpc({store, Key, Value}). %%<label id="kvs.store1"/>
 lookup(Key) -> rpc({lookup, Key}). %%<label id="kvs.lookup1"/>
 
 rpc(Q) ->
-    kvs ! {self(), Q},
-    receive
-	{kvs, Reply} ->
-	    Reply
-    end.
+  kvs ! {self(), Q},
+  receive
+    {kvs, Reply} ->
+      Reply
+  end.
 
 loop() ->  %%<label id="kvs.loop"/>
-    receive
-	{From, {store, Key, Value}} ->  %%<label id="kvs.store2"/>
-	    put(Key, {ok, Value}),
-	    From ! {kvs, true},
-	    loop();
-	{From, {lookup, Key}} -> %%<label id="kvs.lookup2"/>
-	    From ! {kvs, get(Key)},
-	    loop()
-    end.
+  receive
+    {From, {store, Key, Value}} ->  %%<label id="kvs.store2"/>
+      put(Key, {ok, Value}),
+      From ! {kvs, true},
+      loop();
+    {From, {lookup, Key}} -> %%<label id="kvs.lookup2"/>
+      From ! {kvs, get(Key)},
+      loop()
+  end.

@@ -465,7 +465,9 @@ Pid ! {square,12}.
 ```
 
 客户端-服务器
+
 客户端总是通过像服务器发送一个请求来发起计算，服务端计算后生成回复，然后发送一个响应给客户端。
+
 
 ```
 Pid = spawn(area_server1,loop,[]).
@@ -477,9 +479,11 @@ stimer.erl 定时器
 
 注册进程
 
+```
 register(area,Pid).
 
 area ! {rectangle,4,5}.
+```
 
 clock.erl 模拟时钟
 
@@ -497,16 +501,17 @@ spawn(Func)  spawn(MFA)
 
 进程
 普通进程和系统进程  process_flag(trap_exit,true)
+
 连接
 A B 相互连接，其中任何一个终止会发错误信号
 监视
 监视是单向的
 消息和错误信号
 错误信号的接受
-显示错误信号
-不可捕捉的错误信号
+显示错误信号 exit(Why)
+不可捕捉的错误信号 exit(Pid,kill)
 
-P1  call link(P3)
+P1 call link(P3)
 
 -spec spawn_link(Fnc) -> Pid
 -spec spawn_link(Mod,Fuc,Args) -> Pid
@@ -529,6 +534,7 @@ P1  call link(P3)
 容错式编程
 lib_misc.erl
 
+```
 F = fun() ->
         receive
             X -> list_to_atom(X)
@@ -539,31 +545,40 @@ Pid = spawn(F).
 lib_misc:on_exit(Pid,fun(Why) ->
                         io:format("~p died with:~p~n",[Pid,Why])
                      end).
-
+```
 
 ## 第14章 分布式编程
 
 socket_dist/kvs.erl
 
+```
 kvs:start().
 kvs:store({location,joe},"Stockholm").
 kvs:store(weather,raining).
 kvs:lookup({location,joe}).
 kvs:lookup(weather).
+```
 
+```
 erl -sname hf
 kvs:start().
 kvs:lookup(weather).
+```
 
+```
 erl -sname hj
-rpc:call('haifeng@haifeng-mac',kvs,store,[weather,fine]).
-rpc:call('haifeng@haifeng-mac',kvs,lookup,[weather]).
+rpc:call('hf@haifeng',kvs,store,[weather,fine]).
+rpc:call('hf@haifeng',kvs,lookup,[weather]).
+```
 
-
+```
 erl -name hf -setcookie abc
 erl -name hj -setcookie abc
 
 rpc:call(Node,Mod,Function,Args).
+```
+
+分布式编程的库和内置函数
 
 -spec spawn(Node,Func)->Pid
 
@@ -577,22 +592,131 @@ rpc:call(Node,Mod,Function,Args).
 
 dist_demo.erl
 
+
 cookie 保护系统
 
 $HOME/.erlang.cookie
 
+erl -setcookie xxxx
 
+erlang:setcookie(node(),xxxx).
 
+## 第15章 接口技术
 
+与外部程序通信
 
+## 第16章 文件编程
+
+file
+filename
+filelib
+io
+
+## 第17章 基于套接字编程
+
+```
+socket_examples.erl
+
+B = socket_examples:nano_get_url().
+io:format("~p~n",[B]).
+string:tokens(binary_to_list(B),"\r\n").
+
+socket_examples:start_nano_server().
+socket_examples:nano_client_eval("list_to_tuple([2+3*4,10+20])").
+```
+
+gen_tcp
+gen_udp
+
+顺序和并行服务器（分裂一个进程）
+
+主动（非阻塞式{active,true}）和被动套接字（阻塞式{active,false}）
+混合消息接受（部分阻塞式{active,once}）
+
+## 第18章 用WebSocket和Erlang浏览
+
+https://github.com/joearms/ezwebframe
+
+cowboy：https://github.com/ninenines/cowboy
+
+## 第19章 用ETS和DETS存储数据
+
+key-value 存储
+
+ets:new(Name,[Opt])
+
+## 第20章 Mnesia：Erlang 数据库
+
+## 第21章 性能分析、调试与跟踪
+
+性能分析工具：
+cprof:start(). 各个函数调用次数
+fprof 时间
+eprf
+
+运行时诊断 栈跟踪
+
+http://erlangdisplay.iteye.com/blog/1214167
+
+## 第22章 OTP 介绍
+开放电信平台
+行为模式 是一个回调函数作为参数的框架
+
+server1.erl
+
+```
 server1:start(name_server,name_server).
 name_server:add(joe,"at home").
 name_server:find(joe).
-
-
+```
+```
 server2:start(name_server,name_server).
 name_server:add(joe,"at home").
 name_server:find(joe).
+```
+
+gen_server
+
+init
+handle_call
+handle_cast
+handle_info
+terminate
+code_change
+
+my_bank.erl
+
+```
+my_bank:start().
+my_bank:deposit("joe",10).
+my_bank.new_account("joe").
+my_bank:deposit("joe",40).
+my_bank.withdraw("joe",15).
+my_bank.withdraw("joe",45).
+
+gen_server.call(Name,Msg).
+gen_server:cast(Name,Msg).
+```
+
+## 第23章 用 OTP 构建系统
+
+错误记录器 erl -boot start_sasl -config elog2
+报警管理 gen_event
+监控树 gen_supervistor
+application:start
+
+应用程序监视器
+appmon:start().
+
+## 第24章 编程术语
+## 第25章 第三方程序
+
+rebar 管理代码
+rebar.config
+Makefile
+cowboy
+
+
 
 
 
