@@ -36,11 +36,11 @@ start_prod() ->
   ErrorFun = fun log_error/2,
   FbFun = fun log_feedback/1,
   Connection = #apns_connection{
-    apple_host="sandbox.push.apple.com",
+    apple_host="gateway.push.apple.com",
     cert_file="/data/home/ubuntu/cert.pem",
     cert=undefined,
     key=undefined,
-    feedback_host="sandbox.push.apple.com",
+    feedback_host="feedback.push.apple.com",
     error_fun=ErrorFun,
     feedback_fun=FbFun
   },
