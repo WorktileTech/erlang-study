@@ -10,7 +10,7 @@
 -author("haifeng").
 -include_lib("apns/include/apns.hrl").
 %% API
--export([start/0]).
+-export([start/0,start_prod/0]).
 
 start() ->
   ok = apns:start(),
@@ -18,10 +18,29 @@ start() ->
   FbFun = fun log_feedback/1,
   Connection = #apns_connection{
     apple_host="gateway.sandbox.push.apple.com",
-    cert_file="/Users/haifeng/IT/cert.pem",
+    cert_file="/home/xmpp/opt/lesschat/cert.prod.pem",
     cert=undefined,
     key=undefined,
     feedback_host="feedback.sandbox.push.apple.com",
+    error_fun=ErrorFun,
+    feedback_fun=FbFun
+  },
+  F = is_record(Connection, apns_connection),
+  io:format("is :~p~n",[F]),
+  {ok, Pid} = apns:connect('lc-dddd', Connection),
+  Pid.
+
+
+start_prod() ->
+  ok = apns:start(),
+  ErrorFun = fun log_error/2,
+  FbFun = fun log_feedback/1,
+  Connection = #apns_connection{
+    apple_host="sandbox.push.apple.com",
+    cert_file="/data/home/ubuntu/cert.pem",
+    cert=undefined,
+    key=undefined,
+    feedback_host="sandbox.push.apple.com",
     error_fun=ErrorFun,
     feedback_fun=FbFun
   },
