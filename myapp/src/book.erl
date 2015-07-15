@@ -18,7 +18,7 @@ start() ->
   FbFun = fun log_feedback/1,
   Connection = #apns_connection{
     apple_host="gateway.sandbox.push.apple.com",
-    cert_file="/home/xmpp/opt/lesschat/cert.prod.pem",
+    cert_file="/home/xmpp/opt/lesschat/cert.pem",
     cert=undefined,
     key=undefined,
     feedback_host="feedback.sandbox.push.apple.com",
